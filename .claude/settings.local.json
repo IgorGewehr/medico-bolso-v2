@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv /mnt/c/laragon/www/medico-bolso-v2/resources/js/app.js /mnt/c/laragon/www/medico-bolso-v2/resources/js/app.tsx)",
+      "Bash(mkdir:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
