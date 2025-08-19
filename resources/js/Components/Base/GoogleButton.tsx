@@ -32,7 +32,128 @@ const GoogleButton = ({
     loading = false,
     disabled = false,
     text = "Continuar com Google",
-    size = "medium"
+    size = "medium",
+    type = "signin"
+
 }) => {
     const [isHovered, setIsHovered] = useState(false);
+
+    const getButtonText = () => {
+        if (loading) return "Carregando..."
+
+        switch (type) {
+            case 'signup':
+                return text || 'Criar conta com Google';
+            case 'signin':
+            default:
+                return text || 'Entrar com Google';
+        }
+    };
+
+    const getSizeConfig = () => {
+        switch (size) {
+            case 'small':
+                return {
+                    height: 40,
+                    fontSize: '0.875rem',
+                    iconSize: 18,
+                    px: 2,
+                    py: 1
+                };
+            case 'large':
+                return {
+                    height: 56,
+                    fontSize: '1.1rem',
+                    iconSize: 24,
+                    px: 3,
+                    py: 1.5
+                };
+            default: // medium
+                return {
+                    height: 48,
+                    fontSize: '1rem',
+                    iconSize: 20,
+                    px: 2.5,
+                    py: 1.25
+                };
+        }
+    };
+
+    const sizeConfig = getSizeConfig();
+
+    return (
+        <Button
+            onClick={onClick}
+            disabled={disabled || loading}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            sx={{
+                height: sizeConfig.height,
+                backgroundColor: '#ffffff',
+                color: '#3c4043',
+                border: '1px solid #dadce0',
+                borderRadius: 2,
+                textTransform: 'none',
+                fontWeight: 500,
+                fontSize: sizeConfig.fontSize,
+                fontFamily: 'Roboto, Arial, sans-serif',
+                letterSpacing: '0.25px',
+                px: sizeConfig.px,
+                py: sizeConfig.py,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1)',
+                boxShadow: isHovered && !disabled ?
+                    '0 1px 3px 0 rgba(60,64,67,.30), 0 4px 8px 3px rgba(60,64,67,.15)' :
+                    '0 1px 2px 0 rgba(60,64,67,.30), 0 1px 3px 1px rgba(60,64,67,.15)',
+                '&:hover': {
+                    backgroundColor: '#f8f9fa',
+                    borderColor: '#d2d2d2',
+                    boxShadow: '0 1px 3px 0 rgba(60,64,67,.30), 0 4px 8px 3px rgba(60,64,67,.15)'
+                },
+                '&:active': {
+                    backgroundColor: '#f1f3f4',
+                    boxShadow: '0 1px 2px 0 rgba(60,64,67,.30), 0 2px 6px 2px rgba(60,64,67,.15)'
+                },
+                '&:focus': {
+                    outline: 'none',
+                    boxShadow: '0 1px 3px 0 rgba(60,64,67,.30), 0 4px 8px 3px rgba(60,64,67,.15), 0 0 0 1px #4285f4'
+                },
+                '&:disabled': {
+                    backgroundColor: '#ffffff',
+                    color: '#9aa0a6',
+                    borderColor: '#f1f3f4',
+                    boxShadow: 'none',
+                    cursor: 'not-allowed'
+                }
+            }}
+        >
+            {loading ? (
+                <CircularProgress
+                    size={sizeConfig.iconSize}
+                    sx={{
+                        color: '#3c4043',
+                        mr: 1.5
+                    }}
+                />
+            ) : (
+                <GoogleIcon size={sizeConfig.iconSize} />
+            )}
+
+            <Typography
+                component="span"
+                sx={{
+                    fontSize: 'inherit',
+                    fontWeight: 'inherit',
+                    fontFamily: 'inherit',
+                    letterSpacing: 'inherit',
+                    color: loading || disabled ? '#9aa0a6' : '#3c4043'
+                }}
+            >
+                {getButtonText()}
+            </Typography>
+        </Button>
+    );
 }

@@ -12,12 +12,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            
+            // Additional fields for medical practice
+            $table->string('phone')->nullable();
+            $table->string('crm')->nullable();
+            $table->string('specialty')->nullable();
+            $table->string('clinic_name')->nullable();
+            $table->text('clinic_address')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('timezone')->default('America/Sao_Paulo');
+            $table->string('locale')->default('pt_BR');
+            $table->boolean('notifications_enabled')->default(true);
+            $table->boolean('whatsapp_enabled')->default(false);
+            
             $table->timestamps();
         });
 
@@ -29,7 +42,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
+            $table->uuid('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->longText('payload');

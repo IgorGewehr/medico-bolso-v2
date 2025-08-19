@@ -2,9 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(mv /mnt/c/laragon/www/medico-bolso-v2/resources/js/app.js /mnt/c/laragon/www/medico-bolso-v2/resources/js/app.tsx)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(find:*)",
+      "Bash(php artisan migrate:*)",
+      "Bash(/mnt/c/laragon/bin/php/php-8.3.0-Win32-vs16-x64/php.exe artisan migrate:fresh)",
+      "Bash(/mnt/c/laragon/bin/php/php-8.3.16-Win32-vs16-x64/php.exe artisan migrate:fresh)",
+      "Bash(rm:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "additionalDirectories": [
+      "/mnt/c/laragon/bin"
+    ]
   }
 }
