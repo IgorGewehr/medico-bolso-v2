@@ -1,58 +1,105 @@
 import React from 'react';
 import { Head } from '@inertiajs/react';
+import { 
+    Box, 
+    Card, 
+    CardContent, 
+    Typography, 
+    Button, 
+    List, 
+    ListItem, 
+    ListItemIcon, 
+    ListItemText,
+    Container
+} from '@mui/material';
+import { CheckCircle } from '@mui/icons-material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#1976d2',
+        },
+        secondary: {
+            main: '#dc004e',
+        },
+    },
+});
 
 export default function Welcome() {
     return (
-        <>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
             <Head title="Bem-vindo" />
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 text-center">
-                    <div className="mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            Médico Bolso V2
-                        </h1>
-                        <p className="text-gray-600">
-                            Sistema médico desenvolvido com React + Laravel
-                        </p>
-                    </div>
-                    
-                    <div className="space-y-4">
-                        <div className="flex items-center justify-center space-x-2">
-                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span className="text-sm text-gray-700">React 18</span>
-                        </div>
-                        
-                        <div className="flex items-center justify-center space-x-2">
-                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span className="text-sm text-gray-700">Laravel + Inertia.js</span>
-                        </div>
-                        
-                        <div className="flex items-center justify-center space-x-2">
-                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span className="text-sm text-gray-700">Tailwind CSS v4</span>
-                        </div>
-                        
-                        <div className="flex items-center justify-center space-x-2">
-                            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                            <span className="text-sm text-gray-700">TypeScript</span>
-                        </div>
-                    </div>
-                    
-                    <div className="mt-8">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
-                            Começar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </>
+            <Box 
+                sx={{
+                    minHeight: '100vh',
+                    background: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    p: 2
+                }}
+            >
+                <Container maxWidth="sm">
+                    <Card 
+                        elevation={8}
+                        sx={{ 
+                            borderRadius: 4,
+                            textAlign: 'center',
+                            p: 2
+                        }}
+                    >
+                        <CardContent>
+                            <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" color="primary">
+                                Médico Bolso V2
+                            </Typography>
+                            <Typography variant="h6" color="text.secondary" gutterBottom>
+                                Sistema médico desenvolvido com React + Laravel
+                            </Typography>
+                            
+                            <List sx={{ mt: 4, mb: 4 }}>
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <CheckCircle color="success" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="React 18" />
+                                </ListItem>
+                                
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <CheckCircle color="success" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Laravel + Inertia.js" />
+                                </ListItem>
+                                
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <CheckCircle color="success" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Material-UI (MUI)" />
+                                </ListItem>
+                                
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <CheckCircle color="success" />
+                                    </ListItemIcon>
+                                    <ListItemText primary="TypeScript" />
+                                </ListItem>
+                            </List>
+                            
+                            <Button 
+                                variant="contained" 
+                                size="large" 
+                                sx={{ mt: 2, py: 1.5, px: 4 }}
+                            >
+                                Começar
+                            </Button>
+                        </CardContent>
+                    </Card>
+                </Container>
+            </Box>
+        </ThemeProvider>
     );
 }

@@ -50,7 +50,7 @@ npm run build
 - **React 18** - Framework frontend moderno
 - **TypeScript 5** - Tipagem estática
 - **Inertia.js** - SPA sem complexidade de API
-- **Tailwind CSS 4** - Framework CSS utility-first
+- **Material-UI (MUI) 6** - Sistema de design completo
 - **Vite 7** - Build tool rápido
 - **Laravel 11** - Backend robusto
 
@@ -65,9 +65,10 @@ npm run build
 
 ### Estrutura de Componentes:
 ```typescript
-// Exemplo de componente React
+// Exemplo de componente React com MUI
 import React from 'react';
 import { Head } from '@inertiajs/react';
+import { Box, Grid, Card, CardContent, Typography } from '@mui/material';
 import AppLayout from '@/Layouts/AppLayout';
 
 interface DashboardProps {
@@ -82,17 +83,23 @@ export default function Dashboard({ stats }: DashboardProps) {
     return (
         <AppLayout title="Dashboard">
             <Head title="Dashboard" />
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white p-6 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold">Pacientes</h3>
-                            <p className="text-3xl font-bold text-blue-600">{stats.patients}</p>
-                        </div>
-                        {/* Mais cards... */}
-                    </div>
-                </div>
-            </div>
+            <Box py={6}>
+                <Grid container spacing={3}>
+                    <Grid item xs={12} md={4}>
+                        <Card elevation={2}>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom>
+                                    Pacientes
+                                </Typography>
+                                <Typography variant="h3" color="primary" fontWeight="bold">
+                                    {stats.patients}
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                    {/* Mais cards... */}
+                </Grid>
+            </Box>
         </AppLayout>
     );
 }
@@ -133,4 +140,4 @@ npm run lint
 
 ---
 
-🎉 **Projeto migrado com sucesso para React!** A arquitetura está preparada para desenvolvimento moderno e escalável.
+🎉 **Projeto migrado com sucesso para React + Material-UI!** A arquitetura está preparada para desenvolvimento moderno e escalável com um sistema de design completo.

@@ -7,7 +7,7 @@
 ![Laravel](https://img.shields.io/badge/Laravel-11-red.svg)
 ![React](https://img.shields.io/badge/React-18-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)
-![Tailwind](https://img.shields.io/badge/Tailwind-4-cyan.svg)
+![MUI](https://img.shields.io/badge/MUI-6-blue.svg)
 ![PHP](https://img.shields.io/badge/PHP-8.3-purple.svg)
 
 ---
@@ -49,7 +49,7 @@ Laravel Telescope   - Debug e profiling
 React 18            - Framework frontend
 Inertia.js          - SPA sem API complexity
 TypeScript 5        - Tipagem estática
-Tailwind CSS 4      - Framework CSS utility-first
+Material-UI (MUI) 6 - Sistema de design completo
 Vite 7              - Build tool e desenvolvimento
 ```
 
@@ -317,7 +317,7 @@ resources/
 │   │       ├── LineChart.tsx
 │   │       ├── BarChart.tsx
 │   │       └── PieChart.tsx
-│   ├── Hooks/         # Hooks do Vue 3
+│   ├── Hooks/         # Custom React Hooks
 │   │   ├── useAuth.ts
 │   │   ├── usePatients.ts
 │   │   ├── usePermissions.ts
@@ -360,7 +360,7 @@ resources/
 │   │   └── constants.ts
 │   └── app.ts               # Ponto de entrada
 ├── css/
-│   └── app.css              # Tailwind CSS
+│   └── app.css              # Material-UI (MUI)
 └── views/
     └── app.blade.php        # Template principal
 ```
@@ -486,7 +486,15 @@ class PatientController extends Controller
 #### **1. Component Structure**
 ```typescript
 import React, { useMemo } from 'react';
-import BaseButton from '@/Components/Base/Button';
+import { 
+  Card, 
+  CardContent, 
+  CardActions, 
+  Typography, 
+  Box, 
+  Button, 
+  Chip 
+} from '@mui/material';
 
 interface PatientCardProps {
   patient: {
@@ -507,41 +515,50 @@ export default function PatientCard({ patient, canEdit, onEdit }: PatientCardPro
   }, [patient.birthDate]);
 
   return (
-    <div className="patient-card">
-      <header className="patient-card__header">
-        <h3 className="patient-card__name">{patient.name}</h3>
-        <span className="patient-card__age">{patientAge} anos</span>
-      </header>
-      
-      <main className="patient-card__content">
-        <p className="patient-card__info">{patient.phone}</p>
-        <p className="patient-card__info">{patient.email}</p>
-      </main>
-      
-      <footer className="patient-card__actions">
-        <BaseButton 
-          onClick={onEdit}
-          variant="primary"
-          disabled={!canEdit}
-        >
-          Editar
-        </BaseButton>
-      </footer>
-    </div>
+    <Card elevation={2} sx={{ p: 2, '&:hover': { elevation: 4 } }}>
+      <CardContent>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+          <Typography variant="h6" component="h3">
+            {patient.name}
+          </Typography>
+          <Chip label={`${patientAge} anos`} size="small" />
+        </Box>
+        
+        <Box mb={2}>
+          <Typography variant="body2" color="text.secondary">
+            {patient.phone}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {patient.email}
+          </Typography>
+        </Box>
+        
+        <CardActions>
+          <Button 
+            variant="contained"
+            onClick={onEdit}
+            disabled={!canEdit}
+            size="small"
+          >
+            Editar
+          </Button>
+        </CardActions>
+      </CardContent>
+    </Card>
   );
 }
 ```
 
-const props = defineProps<Props>()
+// Interface já definida acima
 
 const { can } = usePermissions()
 
-const patientAge = computed(() => {
+const patientAge = useMemo(() => {
   // Cálculo da idade
   return new Date().getFullYear() - new Date(props.patient.birth_date).getFullYear()
 })
 
-const canEdit = computed(() => can('update', 'Patient'))
+const canEdit = useMemo(() => can('update', 'Patient'))
 
 const editPatient = () => {
   // Lógica de edição
@@ -549,21 +566,18 @@ const editPatient = () => {
 </script>
 
 <style scoped>
-.patient-card {
-  @apply bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow;
-}
+// Usando MUI - estilos definidos inline com sx prop ou styled components
+// Exemplo de styled component para customização avançada:
 
-.patient-card__header {
-  @apply flex justify-between items-center mb-4;
-}
+const StyledCard = styled(Card)(({ theme }) => ({
+  padding: theme.spacing(3),
+  '&:hover': {
+    boxShadow: theme.shadows[4],
+  },
+  transition: theme.transitions.create(['box-shadow']),
+}));
 
-.patient-card__name {
-  @apply text-lg font-semibold text-gray-900;
-}
-
-.patient-card__age {
-  @apply text-sm text-gray-500;
-}
+// Ou usando sx prop diretamente nos componentes
 </style>
 ```
 
@@ -576,13 +590,13 @@ import type { Patient, PaginationMeta } from '@/Types/models'
 
 export function usePatients() {
   const patients = ref<Patient[]>([])
-  const loading = ref(false)
+  const [loading, setLoading] = useState(false)
   const meta = ref<PaginationMeta | null>(null)
   
-  const totalPatients = computed(() => meta.value?.total ?? 0)
+  const totalPatients = useMemo(() => meta?.total ?? 0)
   
   const fetchPatients = async (page = 1, filters = {}) => {
-    loading.value = true
+    loading = true
     
     try {
       router.get(route('patients.index'), 
@@ -590,13 +604,13 @@ export function usePatients() {
         {
           preserveState: true,
           onSuccess: (data) => {
-            patients.value = data.props.patients.data
-            meta.value = data.props.patients.meta
+            patients = data.props.patients.data
+            meta = data.props.patients.meta
           }
         }
       )
     } finally {
-      loading.value = false
+      loading = false
     }
   }
   
@@ -1672,22 +1686,22 @@ interface APIOptions {
 }
 
 export function useAPI() {
-  const loading = ref(false)
+  const [loading, setLoading] = useState(false)
   const errors = ref<Record<string, string>>({})
   
   const get = (url: string, data: Record<string, any> = {}, options: APIOptions = {}) => {
-    loading.value = true
+    loading = true
     errors.value = {}
     
     router.get(url, data, {
       preserveState: options.preserveState ?? true,
       preserveScroll: options.preserveScroll ?? true,
       onSuccess: (response) => {
-        loading.value = false
+        loading = false
         options.onSuccess?.(response)
       },
       onError: (responseErrors) => {
-        loading.value = false
+        loading = false
         errors.value = responseErrors
         options.onError?.(responseErrors)
       }
@@ -1695,18 +1709,18 @@ export function useAPI() {
   }
   
   const post = (url: string, data: Record<string, any> = {}, options: APIOptions = {}) => {
-    loading.value = true
+    loading = true
     errors.value = {}
     
     router.post(url, data, {
       preserveState: options.preserveState ?? true,
       preserveScroll: options.preserveScroll ?? false,
       onSuccess: (response) => {
-        loading.value = false
+        loading = false
         options.onSuccess?.(response)
       },
       onError: (responseErrors) => {
-        loading.value = false
+        loading = false
         errors.value = responseErrors
         options.onError?.(responseErrors)
       }
@@ -1733,50 +1747,63 @@ export function useAPI() {
 }
 ```
 
-#### **3. Stores com React Context**
+#### **3. Context Providers com React**
 ```typescript
-// stores/patients.ts
-import { createContext } from 'pinia'
-import { ref, computed } from 'react'
+// contexts/PatientsContext.tsx
+import { createContext, useContext, useState, useMemo, ReactNode } from 'react'
 import type { Patient, PaginationMeta } from '@/Types/models'
 
-export const usePatientsStore = createContext('patients', () => {
-  // State
-  const patients = ref<Patient[]>([])
-  const currentPatient = ref<Patient | null>(null)
-  const loading = ref(false)
-  const meta = ref<PaginationMeta | null>(null)
-  const filters = ref({
-    search: '',
-    gender: '',
-    active: true
-  })
-  
-  // Getters
-  const totalPatients = computed(() => meta.value?.total ?? 0)
-  const hasPatients = computed(() => patients.value.length > 0)
-  const filteredPatients = computed(() => {
-    let filtered = patients.value
-    
-    if (filters.value.search) {
-      const search = filters.value.search.toLowerCase()
-      filtered = filtered.filter(p => 
-        p.name.toLowerCase().includes(search) ||
-        p.cpf?.includes(search) ||
-        p.phone?.includes(search)
-      )
+interface PatientsContextType {
+  patients: Patient[];
+  loading: boolean;
+  createPatient: (data: Partial<Patient>) => Promise<void>;
+  updatePatient: (id: string, data: Partial<Patient>) => Promise<void>;
+  deletePatient: (id: string) => Promise<void>;
+  fetchPatients: () => Promise<void>;
+}
+
+const PatientsContext = createContext<PatientsContextType | null>(null);
+
+export function PatientsProvider({ children }: { children: ReactNode }) {
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const contextValue = useMemo(() => ({
+    patients,
+    loading,
+    createPatient: async (data: Partial<Patient>) => {
+      setLoading(true);
+      // Implementar lógica
+      setLoading(false);
+    },
+    updatePatient: async (id: string, data: Partial<Patient>) => {
+      // Implementar lógica
+    },
+    deletePatient: async (id: string) => {
+      // Implementar lógica
+    },
+    fetchPatients: async () => {
+      setLoading(true);
+      // Implementar lógica
+      setLoading(false);
     }
-    
-    if (filters.value.gender) {
-      filtered = filtered.filter(p => p.gender === filters.value.gender)
-    }
-    
-    return filtered
-  })
-  
-  // Actions
-  const fetchPatients = async (page = 1, additionalFilters = {}) => {
-    loading.value = true
+  }), [patients, loading]);
+
+  return (
+    <PatientsContext.Provider value={contextValue}>
+      {children}
+    </PatientsContext.Provider>
+  );
+}
+
+export function usePatients() {
+  const context = useContext(PatientsContext);
+  if (!context) {
+    throw new Error('usePatients must be used within a PatientsProvider');
+  }
+  return context;
+}
+```
     
     try {
       const params = {
@@ -1788,18 +1815,18 @@ export const usePatientsStore = createContext('patients', () => {
       const response = await fetch(route('api.v1.patients.index', params))
       const data = await response.json()
       
-      patients.value = data.data
-      meta.value = data.meta
+      patients = data.data
+      meta = data.meta
     } catch (error) {
       console.error('Error fetching patients:', error)
       throw error
     } finally {
-      loading.value = false
+      loading = false
     }
   }
   
   const createPatient = async (patientData: Partial<Patient>) => {
-    loading.value = true
+    loading = true
     
     try {
       const response = await fetch(route('api.v1.patients.store'), {
@@ -1814,7 +1841,7 @@ export const usePatientsStore = createContext('patients', () => {
       const data = await response.json()
       
       if (response.ok) {
-        patients.value.unshift(data.data)
+        patients.unshift(data.data)
         return data.data
       } else {
         throw new Error(data.message)
@@ -1823,12 +1850,12 @@ export const usePatientsStore = createContext('patients', () => {
       console.error('Error creating patient:', error)
       throw error
     } finally {
-      loading.value = false
+      loading = false
     }
   }
   
   const updatePatient = async (id: number, patientData: Partial<Patient>) => {
-    loading.value = true
+    loading = true
     
     try {
       const response = await fetch(route('api.v1.patients.update', id), {
@@ -1843,9 +1870,9 @@ export const usePatientsStore = createContext('patients', () => {
       const data = await response.json()
       
       if (response.ok) {
-        const index = patients.value.findIndex(p => p.id === id)
+        const index = patients.findIndex(p => p.id === id)
         if (index !== -1) {
-          patients.value[index] = data.data
+          patients[index] = data.data
         }
         return data.data
       } else {
@@ -1855,12 +1882,12 @@ export const usePatientsStore = createContext('patients', () => {
       console.error('Error updating patient:', error)
       throw error
     } finally {
-      loading.value = false
+      loading = false
     }
   }
   
   const deletePatient = async (id: number) => {
-    loading.value = true
+    loading = true
     
     try {
       const response = await fetch(route('api.v1.patients.destroy', id), {
@@ -1871,7 +1898,7 @@ export const usePatientsStore = createContext('patients', () => {
       })
       
       if (response.ok) {
-        patients.value = patients.value.filter(p => p.id !== id)
+        patients = patients.filter(p => p.id !== id)
       } else {
         const data = await response.json()
         throw new Error(data.message)
@@ -1880,7 +1907,7 @@ export const usePatientsStore = createContext('patients', () => {
       console.error('Error deleting patient:', error)
       throw error
     } finally {
-      loading.value = false
+      loading = false
     }
   }
   
@@ -1928,8 +1955,8 @@ export const usePatientsStore = createContext('patients', () => {
 #### **4. Componentes Base Reutilizáveis**
 ```typescript
 // Components/Base/Button.tsx
-import React, { useMemo } from 'react';
-import LoadingSpinner from './LoadingSpinner';
+import React from 'react';
+import { Button, CircularProgress } from '@mui/material';
 
 interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
@@ -1954,46 +1981,33 @@ export default function Button({
   children,
   icon
 }: ButtonProps) {
-  const buttonClasses = useMemo(() => [
-  // Base classes
-  'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2',
-  
-    // Size variants
-    size === 'sm' && 'px-3 py-1.5 text-sm',
-    size === 'md' && 'px-4 py-2 text-sm', 
-    size === 'lg' && 'px-6 py-3 text-base',
-    
-    // Color variants
-    variant === 'primary' && 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-400',
-    variant === 'secondary' && 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500 disabled:bg-gray-100',
-    variant === 'danger' && 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-400',
-    variant === 'ghost' && 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500 disabled:text-gray-400',
-    
-    // Full width
-    fullWidth && 'w-full',
-    
-    // Disabled state
-    (disabled || loading) && 'cursor-not-allowed opacity-50'
-  ].filter(Boolean).join(' '), [variant, size, fullWidth, disabled, loading]);
-
   return (
-    <button
-      type={type}
+    <Button
+      type={type as 'button' | 'submit' | 'reset'}
       disabled={disabled || loading}
-      className={buttonClasses}
+      variant={variant === 'primary' ? 'contained' : 
+               variant === 'secondary' ? 'outlined' : 
+               variant === 'danger' ? 'contained' : 'text'}
+      color={variant === 'danger' ? 'error' : 'primary'}
+      size={size}
+      fullWidth={fullWidth}
       onClick={onClick}
+      startIcon={loading ? <CircularProgress size={16} /> : icon}
+      sx={{
+        textTransform: 'none',
+        fontWeight: 500,
+      }}
     >
-      {loading && <LoadingSpinner className="w-4 h-4 mr-2" />}
-      {icon}
-      {children && <span>{children}</span>}
-    </button>
+      {children}
+    </Button>
   );
 }
 ```
 
 ```typescript
 // Components/Base/Input.tsx
-import React, { useMemo } from 'react';
+import React from 'react';
+import { TextField, InputAdornment } from '@mui/material';
 
 interface InputProps {
   id?: string;
@@ -2003,12 +2017,14 @@ interface InputProps {
   placeholder?: string;
   disabled?: boolean;
   required?: boolean;
-  error?: string;
-  hint?: string;
+  error?: boolean;
+  helperText?: string;
   onChange?: (value: string) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  suffix?: React.ReactNode;
+  endAdornment?: React.ReactNode;
+  multiline?: boolean;
+  rows?: number;
 }
 
 export default function Input({
@@ -2019,47 +2035,42 @@ export default function Input({
   placeholder,
   disabled = false,
   required = false,
-  error,
-  hint,
+  error = false,
+  helperText,
   onChange,
   onBlur,
   onFocus,
-  suffix
+  endAdornment,
+  multiline = false,
+  rows = 4
 }: InputProps) {
-  const inputClasses = useMemo(() => [
-    'block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm',
-    error && 'border-red-300 focus:border-red-500 focus:ring-red-500',
-    disabled && 'bg-gray-50 text-gray-500 cursor-not-allowed'
-  ].filter(Boolean).join(' '), [error, disabled]);
-
   return (
-    <div className="space-y-1">
-      {label && (
-        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
-          {label}
-          {required && <span className="text-red-500">*</span>}
-        </label>
-      )}
-      
-      <div className="relative">
-        <input
-          id={id}
-          type={type}
-          value={value}
-          placeholder={placeholder}
-          disabled={disabled}
-          required={required}
-          className={inputClasses}
-          onChange={(e) => onChange?.(e.target.value)}
-          onBlur={onBlur}
-          onFocus={onFocus}
-        />
-        {suffix}
-      </div>
-      
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      {!error && hint && <p className="text-sm text-gray-500">{hint}</p>}
-    </div>
+    <TextField
+      id={id}
+      label={label}
+      type={type}
+      value={value}
+      placeholder={placeholder}
+      disabled={disabled}
+      required={required}
+      error={error}
+      helperText={helperText}
+      onChange={(e) => onChange?.(e.target.value)}
+      onBlur={onBlur}
+      onFocus={onFocus}
+      fullWidth
+      multiline={multiline}
+      rows={multiline ? rows : undefined}
+      variant="outlined"
+      size="medium"
+      InputProps={{
+        endAdornment: endAdornment ? (
+          <InputAdornment position="end">
+            {endAdornment}
+          </InputAdornment>
+        ) : undefined,
+      }}
+    />
   );
 }
 ```
@@ -4206,8 +4217,8 @@ class PatientService
  * Handles loading states, error management, and cache invalidation.
  * 
  * @example
- * ```vue
- * <script setup>
+ * ```typescript
+ * const patientsHook = usePatientsStore();
  * const { 
  *   patients, 
  *   loading, 
@@ -4240,7 +4251,7 @@ class PatientService
     * Loading state indicator
     * @type {Ref<boolean>}
       */
-      const loading = ref(false)
+      const [loading, setLoading] = useState(false)
 
   /**
     * Create a new patient
@@ -4499,7 +4510,7 @@ gzip_min_length 1000;
 
 #### **Semana 4: Frontend Foundation**
 - ✅ Setup React 18 + Inertia.js
-- ✅ Configuração Tailwind CSS
+- ✅ Configuração Material-UI (MUI)
 - ✅ Componentes base reutilizáveis
 - ✅ Stores com React Context
 - ✅ Hooks principais
