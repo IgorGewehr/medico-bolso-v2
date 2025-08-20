@@ -3,6 +3,8 @@ export { default as ConsultationCard } from './ConsultationCard';
 export { default as ExamDialog } from './ExamDialog';
 export { default as ExamsCard } from './ExamsCard';
 export { default as ExamTable } from './ExamTable';
+export { default as MobileConsultationCard } from './MobileConsultationCard';
+export { default as MobilePatientsListCard } from './MobilePatientsListCard';
 export { default as NotesCard } from './NotesCard';
 export { default as PatientBasicInfo } from './PatientBasicInfo';
 export { default as PatientCard } from './PatientCard';

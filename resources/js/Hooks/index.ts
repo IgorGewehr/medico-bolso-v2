@@ -1,0 +1,1 @@
+export { useResponsiveScale, useAutoScale, useCustomScale } from './useResponsiveScale';

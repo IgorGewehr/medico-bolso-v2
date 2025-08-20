@@ -4,6 +4,7 @@ export { default as ComingSoon } from './ComingSoon';
 export { default as CreateNewPrescriptionButton } from './CreateNewPrescriptionButton';
 export { default as CreateNewRecordButton } from './CreateNewRecordButton';
 export { default as EmptyState, EmptyPatientsList, EmptySearchResults, ConnectionError } from './EmptyState';
+export { default as FloatingVoiceRecorder } from './FloatingVoiceRecorder';
 export { default as ImportRecordButton } from './ImportRecordButton';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as NewAppointmentButton } from './NewAppointmentButton';
